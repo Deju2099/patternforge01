@@ -32,8 +32,7 @@ export const motifLibrary: MotifDefinition[] = [
   {
     id: 'isoCube',
     displayName: 'Isometric Cube',
-    // Hexagonal symmetry; keep literal typed to avoid invalid values like 3.
-    rotationSymmetry: 6 as const,
+    rotationSymmetry: 3,
     allowedParams: ['shadeIndex', 'size'],
     difficultyWeight: 4,
     locked: true,
