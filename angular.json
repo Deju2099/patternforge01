@@ -14,7 +14,7 @@
             "outputPath": "dist/patternforge01",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [],
+            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
             "assets": ["src/favicon.ico", "src/assets"],
@@ -43,10 +43,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "patternforge01:build:production"
+              "buildTarget": "patternforge01:build:production"
             },
             "development": {
-              "browserTarget": "patternforge01:build"
+              "buildTarget": "patternforge01:build"
             }
           },
           "defaultConfiguration": "development"
@@ -54,7 +54,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "patternforge01:build"
+            "buildTarget": "patternforge01:build"
           }
         },
         "test": {
@@ -72,7 +72,6 @@
       }
     }
   },
-  "defaultProject": "patternforge01",
   "cli": {
     "analytics": false
   }
