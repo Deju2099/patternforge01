@@ -1,0 +1,9 @@
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+  <button
+    *ngFor="let ans of answers; let idx = index"
+    class="focus:outline-none"
+    (click)="pick(idx)"
+  >
+    <app-puzzle-cell [cell]="ans" [selectable]="true" [selected]="idx === selectedIndex" [label]="String(idx + 1)"></app-puzzle-cell>
+  </button>
+</div>
