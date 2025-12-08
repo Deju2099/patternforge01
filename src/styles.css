@@ -1,0 +1,48 @@
+/* Import Tailwind layers using @import to silence CSS validators that flag custom at-rules. */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    @apply bg-slate-950 text-slate-100;
+  }
+}
+
+/*
+ * Wrap Tailwind @apply usage in a components layer so IDEs and style checkers
+ * recognize the custom at-rule and order it correctly in the compiled CSS.
+ */
+@layer components {
+  .glass-cell {
+    @apply rounded-xl border border-slate-800 bg-slate-900 shadow-cell relative overflow-hidden;
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+  }
+
+  .glass-cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 45%);
+    pointer-events: none;
+  }
+
+  .app-shell {
+    @apply min-h-screen bg-slate-950 text-slate-100 flex flex-col;
+  }
+
+  .section-card {
+    @apply bg-slate-900/80 border border-slate-800 rounded-xl p-6 shadow-lg;
+  }
+
+  .button-primary {
+    @apply px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 transition text-white font-semibold;
+  }
+}
+
