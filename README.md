@@ -1,60 +1,36 @@
-# Patternforge01
+# Patternforge NVR
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.2.
+Foundations for a greyscale Non-Verbal Reasoning (NVR) practice app built with Angular, Tailwind CSS, and lightweight Angular Material primitives (reserved for future UI polish). The current build focuses on a classic timed mode with a best-fit sequence puzzle generator and renderer.
 
-## Development server
+## Getting started
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1. Install dependencies (requires npm access):
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+2. Run the development server:
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+3. Open `http://localhost:4200/` and begin solving puzzles.
 
-To build the project run:
+> Note: If package downloads are blocked in your environment, you can still browse the code to review the modular architecture and renderer logic.
 
-```bash
-ng build
-```
+## Project highlights
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- **Greyscale motif engine**: 80x80 canvas renderer with reusable motifs (bar stacks, staircase, double frame, dot grid, isometric cube, arrow ring) and discrete shade buckets.
+- **Puzzle generation**: Best-fit sequence puzzles built from motif property patterns with tier-aware property budgets.
+- **Game loop**: Classic timed mode with scoring, streaks, and lightweight HUD plus answer grid.
+- **Stats**: LocalStorage-backed stats service tracking total puzzles, correct answers, best streak, and difficult solves.
+- **Tailwind styling**: Glassy cell treatment, dark shell, and responsive layouts tuned for desktop/tablet first.
 
-## Running unit tests
+## Future improvements
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# patternforge01
+- Wire additional game modes (survival, mastery) and richer Puzzle Labs controls for live motif tweaking.
+- Add persistence via an HTTP API for profile sync and motif unlocks.
+- Swap the canvas renderer for PixiJS if motif complexity or performance demands grow.
+- Optional colour overlay strictly for UI chrome while keeping puzzle logic greyscale.
