@@ -4,6 +4,11 @@
     class="focus:outline-none"
     (click)="pick(idx)"
   >
-    <app-puzzle-cell [cell]="ans" [selectable]="true" [selected]="idx === selectedIndex" [label]="String(idx + 1)"></app-puzzle-cell>
+    <app-puzzle-cell
+      [cell]="ans"
+      [selectable]="true"
+      [selected]="idx === selectedIndex"
+      [label]="(idx + 1).toString()"
+    ></app-puzzle-cell>
   </button>
 </div>

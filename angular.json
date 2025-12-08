@@ -72,5 +72,8 @@
       }
     }
   },
-  "defaultProject": "patternforge01"
+  "defaultProject": "patternforge01",
+  "cli": {
+    "analytics": false
+  }
 }

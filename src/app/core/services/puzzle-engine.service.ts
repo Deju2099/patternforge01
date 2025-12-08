@@ -3,7 +3,7 @@ import { DifficultyService } from './difficulty.service';
 import { ProfileService } from './profile.service';
 import { CellConfig, PuzzleInstance } from '../models/puzzle.model';
 import { GameMode } from '../models/session.model';
-import { MotifDefinition, MotifParams } from '../models/motif.model';
+import { MotifDefinition, MotifParams, ShadeIndex } from '../models/motif.model';
 import { PropertyPattern } from '../models/pattern.model';
 import { motifLibrary } from './motif-library';
 
@@ -76,7 +76,12 @@ export class PuzzleEngineService {
   private composeParams(patterns: PropertyPattern[], index: number): MotifParams {
     const params: MotifParams = {};
     patterns.forEach((pat) => {
-      params[pat.property] = pat.values[index % pat.values.length];
+      const value = pat.values[index % pat.values.length];
+      if (pat.property === 'shadeIndex') {
+        params.shadeIndex = this.clampShade(value);
+      } else {
+        (params as Record<string, number | ShadeIndex | undefined>)[pat.property] = value;
+      }
     });
     return params;
   }
@@ -89,10 +94,19 @@ export class PuzzleEngineService {
       const property = this.pick(motif.allowedParams);
       const delta = Math.random() > 0.5 ? 1 : -1;
       const nextValue = ((tweaked[property] as number | undefined) ?? 0) + delta;
-      tweaked[property] = Math.max(0, Math.min(4, nextValue));
+      if (property === 'shadeIndex') {
+        tweaked[property] = this.clampShade(nextValue);
+      } else {
+        tweaked[property] = Math.max(0, Math.min(4, nextValue));
+      }
       answers.push({ motifId: motif.id, params: tweaked });
     }
     return this.shuffle(answers);
+  }
+
+  private clampShade(value: number): ShadeIndex {
+    const clamped = Math.max(0, Math.min(3, Math.round(value)));
+    return clamped as ShadeIndex;
   }
 
   private isSameCell(a: CellConfig, b: CellConfig): boolean {
