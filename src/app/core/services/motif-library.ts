@@ -32,8 +32,8 @@ export const motifLibrary: MotifDefinition[] = [
   {
     id: 'isoCube',
     displayName: 'Isometric Cube',
-    // Hexagonal symmetry; clamp to the allowed literal union instead of a free-form number.
-    rotationSymmetry: 6 as MotifDefinition['rotationSymmetry'],
+    // Hexagonal symmetry; ensure literal type satisfies MotifDefinition so invalid values like 3 are rejected.
+    rotationSymmetry: 6 satisfies MotifDefinition['rotationSymmetry'],
     allowedParams: ['shadeIndex', 'size'],
     difficultyWeight: 4,
     locked: true,
