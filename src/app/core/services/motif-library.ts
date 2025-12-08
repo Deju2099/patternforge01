@@ -32,7 +32,7 @@ export const motifLibrary: MotifDefinition[] = [
   {
     id: 'isoCube',
     displayName: 'Isometric Cube',
-    rotationSymmetry: 6,
+    rotationSymmetry: 3,
     allowedParams: ['shadeIndex', 'size'],
     difficultyWeight: 4,
     locked: true,
