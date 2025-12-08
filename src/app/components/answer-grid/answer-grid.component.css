@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+button {
+  @apply rounded-xl hover:-translate-y-0.5 transition transform;
+}
