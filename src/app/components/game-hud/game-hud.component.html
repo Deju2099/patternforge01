@@ -1,0 +1,30 @@
+<div class="section-card flex flex-wrap gap-4 items-center justify-between text-sm">
+  <div class="flex gap-4 items-center">
+    <div>
+      <div class="text-slate-400">Mode</div>
+      <div class="font-semibold">{{ state.mode }}</div>
+    </div>
+    <div>
+      <div class="text-slate-400">Tier</div>
+      <div class="font-semibold">{{ state.difficultyTier }}</div>
+    </div>
+  </div>
+  <div class="flex gap-4 items-center">
+    <div>
+      <div class="text-slate-400">Score</div>
+      <div class="text-xl font-semibold">{{ state.currentScore }}</div>
+    </div>
+    <div>
+      <div class="text-slate-400">Streak</div>
+      <div class="text-xl font-semibold">{{ state.streak }}</div>
+    </div>
+    <div>
+      <div class="text-slate-400">Lives</div>
+      <div class="text-xl font-semibold">{{ state.lives }}</div>
+    </div>
+    <div>
+      <div class="text-slate-400">Timer</div>
+      <div class="text-xl font-semibold">{{ state.timeRemaining | number:'1.0-0' }}s</div>
+    </div>
+  </div>
+</div>

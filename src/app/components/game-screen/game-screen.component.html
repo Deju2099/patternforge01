@@ -1,0 +1,19 @@
+<section class="max-w-6xl mx-auto p-6 space-y-6" *ngIf="game.currentPuzzle as puzzle">
+  <app-game-hud [state]="game.state"></app-game-hud>
+  <div class="section-card space-y-4">
+    <div class="text-sm text-slate-300">Best-Fit Sequence: choose the missing cell.</div>
+    <app-puzzle-board [cells]="puzzle.visibleCells"></app-puzzle-board>
+    <div class="border-t border-slate-800 pt-4 space-y-3">
+      <div class="text-sm text-slate-400">Select an answer:</div>
+      <app-answer-grid
+        [answers]="puzzle.answers"
+        [selectedIndex]="selectedIndex"
+        (selected)="selectAnswer($event)"
+      ></app-answer-grid>
+      <div class="flex items-center gap-3">
+        <button class="button-primary" (click)="submit()">Submit</button>
+        <span class="text-sm text-slate-300">{{ feedback }}</span>
+      </div>
+    </div>
+  </div>
+</section>
