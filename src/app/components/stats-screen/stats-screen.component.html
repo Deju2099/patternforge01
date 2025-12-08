@@ -1,0 +1,27 @@
+<section class="max-w-4xl mx-auto p-6 space-y-4">
+  <div class="section-card">
+    <h2 class="text-xl font-semibold mb-3">Progress</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div>
+        <div class="text-slate-400 text-sm">Total Puzzles</div>
+        <div class="text-2xl font-semibold">{{ stats.snapshot.totalPuzzles }}</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-sm">Correct</div>
+        <div class="text-2xl font-semibold">{{ stats.snapshot.totalCorrect }}</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-sm">Best Streak</div>
+        <div class="text-2xl font-semibold">{{ stats.snapshot.bestStreak }}</div>
+      </div>
+      <div>
+        <div class="text-slate-400 text-sm">Difficult Solved</div>
+        <div class="text-2xl font-semibold">{{ stats.snapshot.difficultSolved }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-card text-sm text-slate-300">
+    <p class="mb-2">Stats are stored locally. In a future iteration a backend could sync across devices.</p>
+    <button class="button-primary" (click)="stats.reset()">Reset Stats</button>
+  </div>
+</section>
