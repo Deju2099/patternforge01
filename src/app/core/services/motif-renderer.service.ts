@@ -3,14 +3,15 @@ import { CellConfig } from '../models/puzzle.model';
 import { ShadeIndex } from '../models/motif.model';
 
 const SHADE_MAP: Record<ShadeIndex, string> = {
-  0: 'rgba(245,245,245,0.95)',
-  1: 'rgba(200,200,200,0.75)',
-  2: 'rgba(120,120,120,0.8)',
-  3: 'rgba(30,30,30,0.95)',
+  0: '#E6E3E3', // very light tone
+  1: '#ADA1A1', // light grey
+  2: '#544E4E', // medium grey
+  3: '#0C0101', // deep black
 };
 
 /**
- * Draws greyscale motifs into an 80x80 canvas context.
+ * Draws greyscale motifs using an 80x80 unit coordinate space, scaled to the
+ * actual canvas size for responsive rendering.
  */
 @Injectable({ providedIn: 'root' })
 export class MotifRendererService {
@@ -19,8 +20,14 @@ export class MotifRendererService {
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const scale = Math.min(canvas.width, canvas.height) / 80;
+    ctx.save();
+    ctx.scale(scale, scale);
     this.drawCellFrame(ctx);
-    if (!cell) return;
+    if (!cell) {
+      ctx.restore();
+      return;
+    }
 
     switch (cell.motifId) {
       case 'barStack':
@@ -45,15 +52,16 @@ export class MotifRendererService {
         this.drawDotGrid(ctx, cell);
         break;
     }
+
+    ctx.restore();
   }
 
   private drawCellFrame(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(10,10,10,0.9)';
-    ctx.fillStyle = 'rgba(40,40,40,0.65)';
-    this.roundRect(ctx, 2, 2, 76, 76, 10);
-    ctx.stroke();
+    ctx.lineWidth = 0;
+    ctx.fillStyle = '#eef1f5';
+    this.roundRect(ctx, 1.2, 1.2, 77.6, 77.6, 10);
+    ctx.fill();
     ctx.restore();
   }
 
@@ -119,13 +127,14 @@ export class MotifRendererService {
   private drawIsoCube(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
     const { shadeIndex = 2, size = 1 } = cell.params;
     const base = 16 + size * 4;
+    const shade = Math.max(0, Math.min(3, shadeIndex)) as ShadeIndex;
+    const light = SHADE_MAP[Math.max(0, shade - 1) as ShadeIndex];
+    const medium = SHADE_MAP[shade];
+    const dark = SHADE_MAP[Math.min(3, shade + 1) as ShadeIndex];
     ctx.save();
     ctx.translate(40, 40);
-    ctx.strokeStyle = 'rgba(15,15,15,0.9)';
+    ctx.strokeStyle = medium;
     ctx.lineWidth = 1.5;
-
-    const light = SHADE_MAP[shadeIndex as ShadeIndex];
-    const dark = 'rgba(20,20,20,0.8)';
     ctx.beginPath();
     ctx.moveTo(0, -base);
     ctx.lineTo(base, -base / 2);
@@ -152,7 +161,7 @@ export class MotifRendererService {
     ctx.lineTo(-base, base / 2);
     ctx.lineTo(0, base);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(80,80,80,0.8)';
+    ctx.fillStyle = medium;
     ctx.fill();
     ctx.stroke();
     ctx.restore();
