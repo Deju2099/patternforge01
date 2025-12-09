@@ -5,8 +5,8 @@ import { ShadeIndex } from '../models/motif.model';
 const SHADE_MAP: Record<ShadeIndex, string> = {
   0: '#ADA1A1', // light grey
   1: '#544E4E', // medium grey
-  2: '#0C0101', // black
-  3: '#0C0101', // clamp any extras to the darkest tone
+  2: '#2D2B2B', // dark grey
+  3: '#000000', // black
 };
 
 /**
