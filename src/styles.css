@@ -25,7 +25,7 @@
     position: relative;
     overflow: hidden;
     border-radius: 0.75rem; /* rounded-xl */
-    background-color: #f9fafb; /* very light grey */
+    background-color: #eef1f5; /* lightened slate tint for clearer contrast */
   }
 
   .puzzle-cell-size {

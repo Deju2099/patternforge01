@@ -59,7 +59,7 @@ export class MotifRendererService {
   private drawCellFrame(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.lineWidth = 0;
-    ctx.fillStyle = '#fbfbfb';
+    ctx.fillStyle = '#eef1f5';
     this.roundRect(ctx, 1.2, 1.2, 77.6, 77.6, 10);
     ctx.fill();
     ctx.restore();
