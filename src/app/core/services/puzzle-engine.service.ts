@@ -55,7 +55,7 @@ export class PuzzleEngineService {
   }
 
   private samplePattern(length: number, variant: number): number[] {
-    const start = Math.floor(Math.random() * 3);
+    const start = Math.floor(Math.random() * 4);
     const arr: number[] = [];
     for (let i = 0; i < length; i++) {
       switch (variant % 3) {
@@ -63,7 +63,7 @@ export class PuzzleEngineService {
           arr.push((start + i) % 4);
           break;
         case 1:
-          arr.push(Math.abs(((i % 2) * 2 - 1)) + start);
+          arr.push(((start + (i % 2 === 0 ? -1 : 1)) % 4 + 4) % 4);
           break;
         default:
           arr.push([0, 1, 2, 1, 0][i % 5]);
@@ -87,25 +87,29 @@ export class PuzzleEngineService {
   }
 
   private buildAnswers(correct: CellConfig, motif: MotifDefinition): CellConfig[] {
-    const answers: CellConfig[] = [];
-    answers.push(correct);
-    while (answers.length < 4) {
+    const answers: CellConfig[] = [correct];
+    let guard = 0;
+    while (answers.length < 4 && guard < 50) {
+      guard++;
       const tweaked: MotifParams = { ...correct.params };
       const property = this.pick(motif.allowedParams);
+      const current = (tweaked[property] as number | undefined) ?? 0;
       const delta = Math.random() > 0.5 ? 1 : -1;
-      const nextValue = ((tweaked[property] as number | undefined) ?? 0) + delta;
-      if (property === 'shadeIndex') {
-        tweaked[property] = this.clampShade(nextValue);
-      } else {
-        tweaked[property] = Math.max(0, Math.min(4, nextValue));
-      }
-      answers.push({ motifId: motif.id, params: tweaked });
+      const nextValue = property === 'shadeIndex'
+        ? this.clampShade(current + delta)
+        : Math.max(0, Math.min(4, current + delta));
+      if (nextValue === current) continue;
+
+      tweaked[property] = nextValue as any;
+      const candidate = { motifId: motif.id, params: tweaked };
+      if (answers.some((a) => this.isSameCell(a, candidate))) continue;
+      answers.push(candidate);
     }
     return this.shuffle(answers);
   }
 
   private clampShade(value: number): ShadeIndex {
-    const clamped = Math.max(0, Math.min(2, Math.round(value)));
+    const clamped = Math.max(0, Math.min(3, Math.round(value)));
     return clamped as ShadeIndex;
   }
 
