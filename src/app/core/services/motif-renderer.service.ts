@@ -3,10 +3,10 @@ import { CellConfig } from '../models/puzzle.model';
 import { ShadeIndex } from '../models/motif.model';
 
 const SHADE_MAP: Record<ShadeIndex, string> = {
-  0: 'rgba(244,244,244,0.95)', // light grey
-  1: 'rgba(179,179,179,0.9)', // medium grey
-  2: 'rgba(17,17,17,0.95)', // near black
-  3: 'rgba(17,17,17,0.95)', // collapse darker requests into a single dark tone
+  0: '#e5e7eb', // light grey
+  1: '#9ca3af', // medium grey
+  2: '#0f172a', // near black
+  3: '#0f172a', // collapse darker requests into a single dark tone
 };
 
 /**
@@ -59,8 +59,8 @@ export class MotifRendererService {
   private drawCellFrame(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.lineWidth = 0;
-    ctx.fillStyle = 'rgba(244,244,244,0.3)';
-    this.roundRect(ctx, 2, 2, 76, 76, 10);
+    ctx.fillStyle = 'rgba(235, 237, 240, 0.65)';
+    this.roundRect(ctx, 3, 3, 74, 74, 10);
     ctx.fill();
     ctx.restore();
   }

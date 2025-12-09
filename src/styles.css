@@ -29,8 +29,8 @@
   }
 
   .puzzle-cell-size {
-    width: clamp(96px, 14vw, 140px);
-    height: clamp(96px, 14vw, 140px);
+    width: clamp(128px, 16vw, 192px);
+    height: clamp(128px, 16vw, 192px);
   }
 
   .app-shell {
