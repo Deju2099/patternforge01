@@ -3,10 +3,10 @@ import { CellConfig } from '../models/puzzle.model';
 import { ShadeIndex } from '../models/motif.model';
 
 const SHADE_MAP: Record<ShadeIndex, string> = {
-  0: '#ADA1A1', // light grey
-  1: '#544E4E', // medium grey
-  2: '#2D2B2B', // dark grey
-  3: '#000000', // black
+  0: '#E6E3E3', // very light tone
+  1: '#ADA1A1', // light grey
+  2: '#544E4E', // medium grey
+  3: '#0C0101', // deep black
 };
 
 /**
@@ -59,7 +59,7 @@ export class MotifRendererService {
   private drawCellFrame(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.lineWidth = 0;
-    ctx.fillStyle = 'rgba(248, 250, 245, 0.75)';
+    ctx.fillStyle = '#fbfbfb';
     this.roundRect(ctx, 1.2, 1.2, 77.6, 77.6, 10);
     ctx.fill();
     ctx.restore();
@@ -127,10 +127,10 @@ export class MotifRendererService {
   private drawIsoCube(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
     const { shadeIndex = 2, size = 1 } = cell.params;
     const base = 16 + size * 4;
-    const shade = Math.min(shadeIndex, 2) as ShadeIndex;
+    const shade = Math.max(0, Math.min(3, shadeIndex)) as ShadeIndex;
     const light = SHADE_MAP[Math.max(0, shade - 1) as ShadeIndex];
     const medium = SHADE_MAP[shade];
-    const dark = SHADE_MAP[2];
+    const dark = SHADE_MAP[Math.min(3, shade + 1) as ShadeIndex];
     ctx.save();
     ctx.translate(40, 40);
     ctx.strokeStyle = medium;

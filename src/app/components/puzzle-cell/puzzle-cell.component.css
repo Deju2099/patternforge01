@@ -1,3 +1,13 @@
 :host {
   display: inline-block;
 }
+
+.answer-highlight {
+  box-shadow: 0 0 0 3px #a5b4fc, 0 12px 18px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.answer-highlight:hover {
+  box-shadow: 0 0 0 3px #c7d2fe, 0 12px 18px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
