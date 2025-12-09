@@ -1,4 +1,4 @@
-<div class="glass-cell w-20 h-20 flex items-center justify-center relative" [class.border-indigo-400]="selected">
-  <canvas #canvas width="80" height="80" class="absolute inset-1 rounded-lg"></canvas>
+<div class="glass-cell puzzle-cell-size flex items-center justify-center relative" [class.border-indigo-400]="selected">
+  <canvas #canvas width="120" height="120" class="absolute inset-0 rounded-lg w-full h-full"></canvas>
   <span *ngIf="label" class="absolute -top-2 -right-2 text-[10px] bg-indigo-600 text-white rounded-full px-1">{{ label }}</span>
 </div>
