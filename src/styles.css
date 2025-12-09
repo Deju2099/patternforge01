@@ -25,8 +25,12 @@
     position: relative;
     overflow: hidden;
     border-radius: 0.75rem; /* rounded-xl */
-    border: 1px solid #e2e8f0; /* slate-200 */
     background-color: #f8faf5; /* off-white */
+  }
+
+  .puzzle-cell-size {
+    width: clamp(96px, 14vw, 140px);
+    height: clamp(96px, 14vw, 140px);
   }
 
   .app-shell {
