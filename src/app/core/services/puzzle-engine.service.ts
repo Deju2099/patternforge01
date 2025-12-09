@@ -105,7 +105,7 @@ export class PuzzleEngineService {
   }
 
   private clampShade(value: number): ShadeIndex {
-    const clamped = Math.max(0, Math.min(3, Math.round(value)));
+    const clamped = Math.max(0, Math.min(2, Math.round(value)));
     return clamped as ShadeIndex;
   }
 
