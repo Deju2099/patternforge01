@@ -68,15 +68,21 @@ export class MotifRendererService {
   private drawBarStack(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
     const { shadeIndex = 2, size = 1 } = cell.params;
     const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
-    const width = 10 + size * 6;
-    const spacing = 6;
-    const startX = 20 - width / 2;
+
+    // Fit the entire stack inside the canvas by scaling bar width to the count.
+    const spacing = 4 + size; // slightly increase spacing for larger sizes
+    const availableWidth = 54 + size * 6; // usable width before touching the frame rounding
+    const barWidth = Math.max(6, (availableWidth - spacing * (count - 1)) / count);
+    const totalWidth = barWidth * count + spacing * (count - 1);
+    const startX = 40 - totalWidth / 2;
     const centerY = 40;
+    const height = 32 + size * 6;
+
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
     for (let i = 0; i < count; i++) {
-      const offset = (i - (count - 1) / 2) * (width + spacing);
-      ctx.fillRect(40 + startX + offset, centerY - 20, width, 40);
+      const offset = i * (barWidth + spacing);
+      ctx.fillRect(startX + offset, centerY - height / 2, barWidth, height);
     }
     ctx.restore();
   }
