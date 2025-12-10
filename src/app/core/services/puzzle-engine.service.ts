@@ -205,11 +205,25 @@ export class PuzzleEngineService {
 
   private isSameCell(a: CellConfig, b: CellConfig): boolean {
     if (a.motifId !== b.motifId) return false;
-    const keys = new Set([...Object.keys(a.params), ...Object.keys(b.params)]);
+    const left = this.canonicalizeParams(a);
+    const right = this.canonicalizeParams(b);
+    const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
     for (const key of keys) {
-      if ((a.params as any)[key] !== (b.params as any)[key]) return false;
+      if ((left as any)[key] !== (right as any)[key]) return false;
     }
     return true;
+  }
+
+  /**
+   * Normalizes params that have no visible effect for a motif so visual duplicates are
+   * treated as equal. Example: arrow rings look identical regardless of rotation.
+   */
+  private canonicalizeParams(cell: CellConfig): MotifParams {
+    if (cell.motifId === 'arrowRing') {
+      const { count, shadeIndex } = cell.params;
+      return { count, shadeIndex };
+    }
+    return cell.params;
   }
 
   private shuffle<T>(items: T[]): T[] {
