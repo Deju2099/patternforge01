@@ -66,7 +66,8 @@ export class MotifRendererService {
   }
 
   private drawBarStack(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 3, shadeIndex = 2, size = 1 } = cell.params;
+    const { shadeIndex = 2, size = 1 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
     const width = 10 + size * 6;
     const spacing = 6;
     const startX = 20 - width / 2;
@@ -81,7 +82,8 @@ export class MotifRendererService {
   }
 
   private drawStaircase(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 4, shadeIndex = 1, rotation = 0 } = cell.params;
+    const { shadeIndex = 1, rotation = 0 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 4));
     const stepSize = 12;
     ctx.save();
     ctx.translate(40, 40);
@@ -109,13 +111,13 @@ export class MotifRendererService {
   }
 
   private drawDotGrid(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 9, shadeIndex = 3 } = cell.params;
-    const dots = Math.max(3, Math.min(5, count));
-    const gap = 50 / (dots - 1);
+    const { shadeIndex = 3 } = cell.params;
+    const dotsPerSide = Math.max(2, Math.min(6, cell.params.count ?? 3));
+    const gap = 50 / (dotsPerSide - 1);
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
-    for (let i = 0; i < dots; i++) {
-      for (let j = 0; j < dots; j++) {
+    for (let i = 0; i < dotsPerSide; i++) {
+      for (let j = 0; j < dotsPerSide; j++) {
         ctx.beginPath();
         ctx.arc(15 + i * gap, 15 + j * gap, 3, 0, Math.PI * 2);
         ctx.fill();
@@ -168,7 +170,8 @@ export class MotifRendererService {
   }
 
   private drawArrowRing(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { shadeIndex = 1, rotation = 0, count = 3 } = cell.params;
+    const { shadeIndex = 1, rotation = 0 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
     const innerRadius = 20;
     ctx.save();
     ctx.translate(40, 40);
@@ -178,9 +181,8 @@ export class MotifRendererService {
     ctx.beginPath();
     ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
     ctx.stroke();
-    const arrowCount = Math.max(3, count);
-    for (let i = 0; i < arrowCount; i++) {
-      const angle = (i / arrowCount) * Math.PI * 2;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
       const tipX = Math.cos(angle) * (innerRadius + 12);
       const tipY = Math.sin(angle) * (innerRadius + 12);
       const baseX = Math.cos(angle) * (innerRadius - 2);
