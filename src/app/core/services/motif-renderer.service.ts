@@ -76,7 +76,9 @@ export class MotifRendererService {
     const totalWidth = barWidth * count + spacing * (count - 1);
     const startX = 40 - totalWidth / 2;
     const centerY = 40;
-    const height = 32 + size * 6;
+
+    // Short/mid/large sizing: noticeably squash small and stretch large bars.
+    const height = 24 + size * 12;
 
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
@@ -120,12 +122,13 @@ export class MotifRendererService {
     const { shadeIndex = 3 } = cell.params;
     const dotsPerSide = Math.max(2, Math.min(6, cell.params.count ?? 3));
     const gap = 50 / (dotsPerSide - 1);
+    const radius = 4;
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
     for (let i = 0; i < dotsPerSide; i++) {
       for (let j = 0; j < dotsPerSide; j++) {
         ctx.beginPath();
-        ctx.arc(15 + i * gap, 15 + j * gap, 3, 0, Math.PI * 2);
+        ctx.arc(15 + i * gap, 15 + j * gap, radius, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -179,6 +182,9 @@ export class MotifRendererService {
     const { shadeIndex = 1, rotation = 0 } = cell.params;
     const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
     const innerRadius = 20;
+    const spokeStart = innerRadius - 4;
+    const spokeEnd = innerRadius + 8;
+    const tipRadius = innerRadius + 16;
     ctx.save();
     ctx.translate(40, 40);
     ctx.rotate((Math.PI / 2) * (rotation % 4));
@@ -189,18 +195,22 @@ export class MotifRendererService {
     ctx.stroke();
     for (let i = 0; i < count; i++) {
       const angle = (i / count) * Math.PI * 2;
-      const tipX = Math.cos(angle) * (innerRadius + 12);
-      const tipY = Math.sin(angle) * (innerRadius + 12);
-      const baseX = Math.cos(angle) * (innerRadius - 2);
-      const baseY = Math.sin(angle) * (innerRadius - 2);
+      const baseX = Math.cos(angle) * spokeStart;
+      const baseY = Math.sin(angle) * spokeStart;
+      const headBaseX = Math.cos(angle) * spokeEnd;
+      const headBaseY = Math.sin(angle) * spokeEnd;
+      const tipX = Math.cos(angle) * tipRadius;
+      const tipY = Math.sin(angle) * tipRadius;
+
       ctx.beginPath();
       ctx.moveTo(baseX, baseY);
-      ctx.lineTo(tipX, tipY);
+      ctx.lineTo(headBaseX, headBaseY);
       ctx.stroke();
+
       ctx.beginPath();
       ctx.moveTo(tipX, tipY);
-      ctx.lineTo(tipX - Math.cos(angle - 0.4) * 6, tipY - Math.sin(angle - 0.4) * 6);
-      ctx.lineTo(tipX - Math.cos(angle + 0.4) * 6, tipY - Math.sin(angle + 0.4) * 6);
+      ctx.lineTo(headBaseX - Math.cos(angle - 0.45) * 7, headBaseY - Math.sin(angle - 0.45) * 7);
+      ctx.lineTo(headBaseX - Math.cos(angle + 0.45) * 7, headBaseY - Math.sin(angle + 0.45) * 7);
       ctx.closePath();
       ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
       ctx.fill();
