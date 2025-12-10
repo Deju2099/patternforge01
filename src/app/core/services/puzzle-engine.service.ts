@@ -122,7 +122,8 @@ export class PuzzleEngineService {
       guard++;
       const tweaked: MotifParams = { ...correct.params };
       const property = this.pick(motif.allowedParams);
-      const current = (tweaked[property] as number | undefined) ?? this.defaultForProperty(property);
+      const current =
+        (tweaked[property] as number | undefined) ?? this.defaultForProperty(property, motif.id);
       const domain = this.domainForProperty(property, motif).filter((v) => v !== current);
       if (domain.length === 0) continue;
       const nextValue = this.pick(domain);
@@ -156,7 +157,11 @@ export class PuzzleEngineService {
     }
   }
 
-  private defaultForProperty(property: keyof MotifParams): number | ShadeIndex {
+  private defaultForProperty(property: keyof MotifParams, motifId?: MotifDefinition['id']): number | ShadeIndex {
+    const motifDefaults = this.motifDefaults(motifId);
+    const specific = motifDefaults[property];
+    if (specific !== undefined) return specific;
+
     switch (property) {
       case 'shadeIndex':
         return 1;
@@ -219,11 +224,45 @@ export class PuzzleEngineService {
    * treated as equal. Example: arrow rings look identical regardless of rotation.
    */
   private canonicalizeParams(cell: CellConfig): MotifParams {
+    const motif = motifLibrary.find((m) => m.id === cell.motifId);
+    const defaults = this.motifDefaults(cell.motifId);
+    const keys = new Set<keyof MotifParams>([
+      ...(motif?.allowedParams ?? []),
+      ...Object.keys(cell.params),
+    ] as (keyof MotifParams)[]);
+
+    const normalized: MotifParams = {};
+    keys.forEach((property) => {
+      const raw = (cell.params as any)[property] ?? (defaults as any)[property];
+      if (raw === undefined) return;
+      (normalized as any)[property] = this.normalizeParam(property, raw, motif);
+    });
+
     if (cell.motifId === 'arrowRing') {
-      const { count, shadeIndex } = cell.params;
-      return { count, shadeIndex };
+      const { count, shadeIndex } = normalized;
+      return { count, shadeIndex } as MotifParams;
     }
-    return cell.params;
+
+    return normalized;
+  }
+
+  private motifDefaults(motifId?: MotifDefinition['id']): Partial<MotifParams> {
+    switch (motifId) {
+      case 'barStack':
+        return { shadeIndex: 2, size: 1, count: 3 };
+      case 'staircase':
+        return { shadeIndex: 1, rotation: 0, count: 4 };
+      case 'doubleFrame':
+        return { shadeIndex: 0, borderThickness: 2, size: 1 };
+      case 'dotGrid':
+        return { shadeIndex: 3, count: 3 };
+      case 'isoCube':
+        return { shadeIndex: 2, size: 1 };
+      case 'arrowRing':
+        return { shadeIndex: 1, rotation: 0, count: 3 };
+      default:
+        return {};
+    }
   }
 
   private shuffle<T>(items: T[]): T[] {
