@@ -66,22 +66,32 @@ export class MotifRendererService {
   }
 
   private drawBarStack(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 3, shadeIndex = 2, size = 1 } = cell.params;
-    const width = 10 + size * 6;
-    const spacing = 6;
-    const startX = 20 - width / 2;
+    const { shadeIndex = 2, size = 1 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
+
+    // Fit the entire stack inside the canvas by scaling bar width to the count.
+    const spacing = 4 + size; // slightly increase spacing for larger sizes
+    const availableWidth = 54 + size * 6; // usable width before touching the frame rounding
+    const barWidth = Math.max(6, (availableWidth - spacing * (count - 1)) / count);
+    const totalWidth = barWidth * count + spacing * (count - 1);
+    const startX = 40 - totalWidth / 2;
     const centerY = 40;
+
+    // Short/mid/large sizing: noticeably squash small and stretch large bars.
+    const height = 24 + size * 12;
+
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
     for (let i = 0; i < count; i++) {
-      const offset = (i - (count - 1) / 2) * (width + spacing);
-      ctx.fillRect(40 + startX + offset, centerY - 20, width, 40);
+      const offset = i * (barWidth + spacing);
+      ctx.fillRect(startX + offset, centerY - height / 2, barWidth, height);
     }
     ctx.restore();
   }
 
   private drawStaircase(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 4, shadeIndex = 1, rotation = 0 } = cell.params;
+    const { shadeIndex = 1, rotation = 0 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 4));
     const stepSize = 12;
     ctx.save();
     ctx.translate(40, 40);
@@ -109,15 +119,16 @@ export class MotifRendererService {
   }
 
   private drawDotGrid(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { count = 9, shadeIndex = 3 } = cell.params;
-    const dots = Math.max(3, Math.min(5, count));
-    const gap = 50 / (dots - 1);
+    const { shadeIndex = 3 } = cell.params;
+    const dotsPerSide = Math.max(2, Math.min(6, cell.params.count ?? 3));
+    const gap = 50 / (dotsPerSide - 1);
+    const radius = 4;
     ctx.save();
     ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
-    for (let i = 0; i < dots; i++) {
-      for (let j = 0; j < dots; j++) {
+    for (let i = 0; i < dotsPerSide; i++) {
+      for (let j = 0; j < dotsPerSide; j++) {
         ctx.beginPath();
-        ctx.arc(15 + i * gap, 15 + j * gap, 3, 0, Math.PI * 2);
+        ctx.arc(15 + i * gap, 15 + j * gap, radius, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -168,8 +179,12 @@ export class MotifRendererService {
   }
 
   private drawArrowRing(ctx: CanvasRenderingContext2D, cell: CellConfig): void {
-    const { shadeIndex = 1, rotation = 0, count = 3 } = cell.params;
+    const { shadeIndex = 1, rotation = 0 } = cell.params;
+    const count = Math.max(2, Math.min(6, cell.params.count ?? 3));
     const innerRadius = 20;
+    const spokeStart = innerRadius - 4;
+    const spokeEnd = innerRadius + 8;
+    const tipRadius = innerRadius + 16;
     ctx.save();
     ctx.translate(40, 40);
     ctx.rotate((Math.PI / 2) * (rotation % 4));
@@ -178,21 +193,24 @@ export class MotifRendererService {
     ctx.beginPath();
     ctx.arc(0, 0, innerRadius, 0, Math.PI * 2);
     ctx.stroke();
-    const arrowCount = Math.max(3, count);
-    for (let i = 0; i < arrowCount; i++) {
-      const angle = (i / arrowCount) * Math.PI * 2;
-      const tipX = Math.cos(angle) * (innerRadius + 12);
-      const tipY = Math.sin(angle) * (innerRadius + 12);
-      const baseX = Math.cos(angle) * (innerRadius - 2);
-      const baseY = Math.sin(angle) * (innerRadius - 2);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const baseX = Math.cos(angle) * spokeStart;
+      const baseY = Math.sin(angle) * spokeStart;
+      const headBaseX = Math.cos(angle) * spokeEnd;
+      const headBaseY = Math.sin(angle) * spokeEnd;
+      const tipX = Math.cos(angle) * tipRadius;
+      const tipY = Math.sin(angle) * tipRadius;
+
       ctx.beginPath();
       ctx.moveTo(baseX, baseY);
-      ctx.lineTo(tipX, tipY);
+      ctx.lineTo(headBaseX, headBaseY);
       ctx.stroke();
+
       ctx.beginPath();
       ctx.moveTo(tipX, tipY);
-      ctx.lineTo(tipX - Math.cos(angle - 0.4) * 6, tipY - Math.sin(angle - 0.4) * 6);
-      ctx.lineTo(tipX - Math.cos(angle + 0.4) * 6, tipY - Math.sin(angle + 0.4) * 6);
+      ctx.lineTo(headBaseX - Math.cos(angle - 0.45) * 7, headBaseY - Math.sin(angle - 0.45) * 7);
+      ctx.lineTo(headBaseX - Math.cos(angle + 0.45) * 7, headBaseY - Math.sin(angle + 0.45) * 7);
       ctx.closePath();
       ctx.fillStyle = SHADE_MAP[shadeIndex as ShadeIndex];
       ctx.fill();
