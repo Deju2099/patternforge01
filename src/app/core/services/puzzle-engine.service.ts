@@ -23,7 +23,7 @@ export class PuzzleEngineService {
     const propertyPatterns = this.buildPatterns(motif, numCells, tier);
     const cells: CellConfig[] = Array.from({ length: numCells }, (_, idx) => ({
       motifId: motif.id,
-      params: this.composeParams(propertyPatterns, idx),
+      params: this.composeParams(propertyPatterns, motif, idx),
     }));
 
     const missingIndex = 2;
@@ -65,40 +65,51 @@ export class PuzzleEngineService {
     const properties = [...motif.allowedParams].sort(() => 0.5 - Math.random()).slice(0, budget);
     return properties.map((prop, idx) => ({
       property: prop,
-      values: this.samplePattern(length, idx),
+      values: this.samplePattern(prop, motif, length, idx),
     }));
   }
 
-  private samplePattern(length: number, variant: number): number[] {
-    const start = Math.floor(Math.random() * 4);
-    const arr: number[] = [];
+  private samplePattern(
+    property: keyof MotifParams,
+    motif: MotifDefinition,
+    length: number,
+    variant: number,
+  ): number[] {
+    const domain = this.domainForProperty(property, motif);
+    if (domain.length <= 1) return Array.from({ length }, () => domain[0] ?? 0);
+    const start = Math.floor(Math.random() * domain.length);
     const choice = variant % 4;
-    for (let i = 0; i < length; i++) {
+
+    const wrap = (offset: number): number => domain[(start + offset + domain.length) % domain.length];
+    const bounce = (idx: number): number => {
+      const period = domain.length * 2 - 2;
+      const pos = idx % period;
+      const mirrored = pos >= domain.length ? period - pos : pos;
+      return domain[mirrored];
+    };
+
+    return Array.from({ length }, (_, i) => {
       switch (choice) {
         case 0:
-          arr.push((start + i) % 4);
-          break;
+          return wrap(i); // monotonic walk across the domain
         case 1:
-          arr.push(((start + (i % 3) - 1 + 4) % 4));
-          break;
+          return wrap(i * 2); // skipping every other entry
         case 2:
-          arr.push((start + [0, 1, 2, 1, 0][i % 5]) % 4);
-          break;
+          return bounce(i); // ping-pong between extremes
         default:
-          arr.push((start + (i % 2 === 0 ? 0 : 2)) % 4);
-          break;
+          return wrap(Math.floor(i / 2)); // linger on each value before stepping
       }
-    }
-    return arr;
+    });
   }
 
-  private composeParams(patterns: PropertyPattern[], index: number): MotifParams {
+  private composeParams(patterns: PropertyPattern[], motif: MotifDefinition, index: number): MotifParams {
     const params: MotifParams = {};
     patterns.forEach((pat) => {
       const value = pat.values[index % pat.values.length];
       (params as Record<string, number | ShadeIndex | undefined>)[pat.property] = this.normalizeParam(
         pat.property,
         value,
+        motif,
       ) as any;
     });
     return params;
@@ -112,9 +123,9 @@ export class PuzzleEngineService {
       const tweaked: MotifParams = { ...correct.params };
       const property = this.pick(motif.allowedParams);
       const current = (tweaked[property] as number | undefined) ?? this.defaultForProperty(property);
-      const delta = Math.random() > 0.5 ? 1 : -1;
-      const nextValue = this.normalizeParam(property, current + delta);
-      if (nextValue === current) continue;
+      const domain = this.domainForProperty(property, motif).filter((v) => v !== current);
+      if (domain.length === 0) continue;
+      const nextValue = this.pick(domain);
 
       tweaked[property] = nextValue as any;
       const candidate = { motifId: motif.id, params: tweaked };
@@ -124,12 +135,13 @@ export class PuzzleEngineService {
     return this.shuffle(answers);
   }
 
-  private normalizeParam(property: keyof MotifParams, raw: number): number | ShadeIndex {
+  private normalizeParam(property: keyof MotifParams, raw: number, motif?: MotifDefinition): number | ShadeIndex {
     switch (property) {
       case 'shadeIndex':
         return this.clampShade(raw);
       case 'rotation':
-        return ((Math.round(raw) % 4) + 4) % 4;
+        return ((Math.round(raw) % (motif?.rotationSymmetry ?? 4)) + (motif?.rotationSymmetry ?? 4)) %
+          (motif?.rotationSymmetry ?? 4);
       case 'size':
         return Math.max(0, Math.min(2, Math.round(raw)));
       case 'borderThickness':
@@ -167,6 +179,28 @@ export class PuzzleEngineService {
   private clampShade(value: number): ShadeIndex {
     const clamped = Math.max(0, Math.min(3, Math.round(value)));
     return clamped as ShadeIndex;
+  }
+
+  private domainForProperty(property: keyof MotifParams, motif: MotifDefinition): number[] {
+    switch (property) {
+      case 'shadeIndex':
+        return [0, 1, 2, 3];
+      case 'rotation': {
+        const max = motif.rotationSymmetry ?? 4;
+        return Array.from({ length: max }, (_, i) => i);
+      }
+      case 'size':
+        return [0, 1, 2];
+      case 'borderThickness':
+        return [1, 2, 3, 4, 5, 6];
+      case 'count':
+        return [2, 3, 4, 5, 6];
+      case 'posX':
+      case 'posY':
+        return [0, 1, 2, 3, 4];
+      default:
+        return [0, 1, 2, 3];
+    }
   }
 
   private isSameCell(a: CellConfig, b: CellConfig): boolean {
